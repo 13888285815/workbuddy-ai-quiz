@@ -3,7 +3,7 @@
 ## 项目概述
 这是一个基于 AI 生成题目的小学英语答题系统，包含学生端和教师端。学生可在线答题、查看排行榜，教师可查看学生数据、错题汇总和 AI 学情诊断。
 
-**在线地址**：https://lxl.bella.press/ai-quiz/
+**在线地址**：https://lxl.bella.press/aiquiz-new/index.html
 
 ## 技术栈
 - **前端**：原生 HTML/CSS/JavaScript（无框架）
@@ -138,8 +138,8 @@ coscmd upload -r sounds/ ai-quiz/sounds/
 ```
 
 ### 访问地址
-- 学生端：https://lxl.bella.press/ai-quiz/
-- 教师端：https://lxl.bella.press/ai-quiz/teacher.html
+- 学生端：https://lxl.bella.press/aiquiz-new/index.html
+- 教师端：https://lxl.bella.press/aiquiz-new/teacher.html
 
 ## 注意事项
 
