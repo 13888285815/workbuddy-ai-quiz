@@ -31,6 +31,10 @@ const Teacher = {
       this.renderStats();
       this.refreshCurrentTab();
     });
+
+    // 易错题复制按钮
+    const copyErrBtn = document.getElementById('copy-all-errors-btn');
+    if (copyErrBtn) copyErrBtn.addEventListener('click', () => this.copyAllErrors());
   },
 
   verifyPassword() {
@@ -235,9 +239,23 @@ const Teacher = {
     Toast.show('错题已复制', 'success');
   },
 
-  deleteStudentErrors(studentName) {
+  async deleteStudentErrors(studentName) {
     if (!confirm(`确认删除 ${studentName} 的所有错题记录？此操作不可恢复。`)) return;
-    Toast.show('当前版本通过API删除功能开发中，请联系管理员', 'warning');
+    const recs = this.state.records.filter(r => r.studentName === studentName);
+    if (recs.length === 0) {
+      Toast.show('未找到该学生的记录', 'warning');
+      return;
+    }
+    try {
+      await API.deleteRecords(studentName);
+      this.state.records = this.state.records.filter(r => r.studentName !== studentName);
+      Toast.show(`已删除 ${studentName} 的 ${recs.length} 条记录`, 'success');
+      this.renderStats();
+      this.populateClassFilter();
+      this.refreshCurrentTab();
+    } catch (e) {
+      Toast.show('删除失败: ' + e.message, 'error');
+    }
   },
 
   // --- 易错题汇总 ---

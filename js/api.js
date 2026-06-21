@@ -67,7 +67,7 @@ const API = {
   async fetchRecords() {
     const url = CONFIG.api.records;
     if (!url) throw new Error('未配置记录API');
-    const resp = await fetch(url);
+    const resp = await API._fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } });
     if (!resp.ok) throw new Error('获取记录失败');
     const data = await resp.json();
     const records = data.submissions || data.data || [];
@@ -304,5 +304,14 @@ const API = {
     } catch (e) {
       console.warn('提交记录失败:', e);
     }
+  },
+
+  // 删除学生记录
+  async deleteRecords(studentName) {
+    const url = CONFIG.api.records;
+    if (!url) throw new Error('未配置记录API');
+    const resp = await API._fetch(`${url}?studentName=${encodeURIComponent(studentName)}`, { method: 'DELETE' });
+    if (!resp.ok) throw new Error('删除记录失败');
+    return resp.json();
   }
 };

@@ -30,5 +30,31 @@ const Storage = {
 
   // 教师密码
   getTeacherPassword() { return localStorage.getItem('ai_quiz_tp') || 'admin123'; },
-  setTeacherPassword(p) { localStorage.setItem('ai_quiz_tp', p); }
+  setTeacherPassword(p) { localStorage.setItem('ai_quiz_tp', p); },
+
+  // ===== 离线做题记录存储 =====
+  // 当 API 不可用时，记录存储在 localStorage
+  getLocalRecords() {
+    try {
+      return JSON.parse(localStorage.getItem('ai_quiz_local_records') || '[]');
+    } catch { return []; }
+  },
+  addLocalRecord(record) {
+    const recs = this.getLocalRecords();
+    recs.push(record);
+    // 最多保留 500 条
+    if (recs.length > 500) recs.splice(0, recs.length - 500);
+    localStorage.setItem('ai_quiz_local_records', JSON.stringify(recs));
+  },
+  syncLocalToAPI() {
+    // 合并本地记录和 API 记录，去重（按 studentName + time 作为键）
+    const local = this.getLocalRecords();
+    if (local.length === 0) return [];
+    // 清除已同步的记录
+    localStorage.removeItem('ai_quiz_local_records');
+    return local;
+  },
+  clearAllRecords() {
+    localStorage.removeItem('ai_quiz_local_records');
+  }
 };

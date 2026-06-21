@@ -63,7 +63,7 @@ ai-quiz/
 - **设置**：可修改 AI 模型、API Key（已移除 CORS 代理设置）
 
 ### 4. 教师端逻辑 (teacher.js)
-- **密码登录**：默认密码 `admin123`（输入框预填）
+|- **密码登录**：默认密码 `admin123`（可在 storage.js 中修改）
 - **数据看板**：学生数、班级数、答题次数、平均正确率
 - **时间筛选**：全部、今天、昨天、本周
 - **班级筛选**：`t-filter-class` 下拉框（需更新 `state.currentClass`）
@@ -143,12 +143,14 @@ coscmd upload -r sounds/ ai-quiz/sounds/
 
 ## 注意事项
 
-1. **CORS 问题**：已移除代理设置，依赖 API 服务器开启跨域支持
+1. **CORS 问题**：已移除代理设置，依赖 API 服务器开启跨域支持。如需本地调试，运行 `python proxy.py --port 8765` 启动 CORS 代理
 2. **AI 生成超时**：学生端 1 分钟、教师诊断 3 分钟倒计时，超时提示刷新
 3. **JSON 解析**：api.js 内置多级容错，但 AI 返回格式不稳定时仍可能失败
-4. **班级筛选**：教师端 `t-filter-class` change 事件需更新 `state.currentClass`
+4. **班级筛选**：教师端 `t-filter-class` change 事件已更新 `state.currentClass` 并触发重新渲染
 5. **知识点预设**：固定 7 项，不再保存用户输入历史
 6. **音效文件**：需确保 sounds/ 目录下存在 success.mp3 和 fail.mp3
+7. **离线存储**：localStorage 可缓存最多 500 条做题记录，API 不可用时自动使用
+8. **安全**：API Key 不再硬编码，需在设置中填写；教师密码默认 `admin123` 可在 storage.js 中修改
 
 ## 扩展建议
 

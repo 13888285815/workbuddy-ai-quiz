@@ -5,7 +5,7 @@ const CONFIG = {
     records: '',
     model: 'LongCat-2.0-Preview',
     baseUrl: 'https://api.longcat.chat/openai',
-    apiKey: 'ak_28V3t57aU2ME4ez0PA22e4P37XT6l',
+    apiKey: '',  // 请在设置中填写 API Key
     thinking: false,
     defaultQuestionCount: 10,
     proxyUrl: ''  // CORS 代理地址，留空则不使用代理
