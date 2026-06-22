@@ -20,25 +20,11 @@ const API = {
           text: () => resp.text()
         };
       } else {
-        // POST型代理：将完整的请求信息发送给代理
-        const proxyOptions = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            url: url,
-            method: options.method || 'GET',
-            headers: options.headers || {},
-            body: options.body || null
-          })
-        };
-        const resp = await fetch(proxyUrl, proxyOptions);
+        // 前缀型代理：将代理URL作为前缀（如 cors-anywhere）
+        const finalUrl = proxyUrl.replace(/\/+$/, '') + '/' + url.replace(/^\/+/, '');
+        const resp = await fetch(finalUrl, options);
         if (!resp.ok) throw new Error(`代理请求失败 (${resp.status})`);
-        return {
-          ok: resp.ok,
-          status: resp.status,
-          json: () => resp.json(),
-          text: () => resp.text()
-        };
+        return resp;
       }
     }
     // 直连模式
