@@ -195,6 +195,13 @@
           <a href="https://xinghuo.xfyun.cn/" target="_blank" style="color:var(--primary);">讯飞星火</a>
         </div>
       </div>
+      <div class="form-group">
+        <label>CORS 代理地址（解决跨域问题）</label>
+        <input type="text" id="settings-proxy" class="form-input" placeholder="http://localhost:8765/proxy">
+        <div style="font-size:12px;color:var(--gray-500);margin-top:4px;">
+          <span style="color:var(--warning);">⚠️ 提示：</span>如果遇到跨域错误，可设置代理地址
+        </div>
+      </div>
       <div class="setting-row">
         <label>关闭模型思考</label>
         <div class="toggle on" id="settings-thinking" onclick="Quiz.toggleThinking()"></div>

@@ -643,6 +643,7 @@ const Quiz = {
     
     $('settings-baseurl').value = CONFIG.api.baseUrl;
     $('settings-apikey').value = CONFIG.api.apiKey;
+    $('settings-proxy').value = CONFIG.api.proxyUrl;
     const thinkingToggle = $('settings-thinking');
     if (CONFIG.api.thinking) thinkingToggle.classList.add('on');
     else thinkingToggle.classList.remove('on');
@@ -687,6 +688,7 @@ const Quiz = {
     CONFIG.setModel(model);
     CONFIG.setBaseUrl(baseUrl);
     CONFIG.setApiKey($('settings-apikey').value.trim());
+    CONFIG.setProxyUrl($('settings-proxy').value.trim());
     $('modal-settings').classList.remove('active');
     Toast.show('设置已保存', 'success');
   },
