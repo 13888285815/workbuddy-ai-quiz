@@ -4,26 +4,42 @@ const API = {
   async _fetch(url, options = {}) {
     const proxyUrl = CONFIG.api.proxyUrl;
     if (proxyUrl) {
-      // 代理模式：将完整的请求信息发送给代理
-      const proxyOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: url,
+      // 判断代理类型：URL参数型代理 (如 api.allorigins.win)
+      if (proxyUrl.includes('?url=')) {
+        // 将目标URL作为参数附加到代理URL
+        const finalUrl = proxyUrl + encodeURIComponent(url);
+        const resp = await fetch(finalUrl, {
           method: options.method || 'GET',
-          headers: options.headers || {},
-          body: options.body || null
-        })
-      };
-      const resp = await fetch(proxyUrl, proxyOptions);
-      if (!resp.ok) throw new Error(`代理请求失败 (${resp.status})`);
-      // 代理返回原始API的响应体
-      return {
-        ok: resp.ok,
-        status: resp.status,
-        json: () => resp.json(),
-        text: () => resp.text()
-      };
+          headers: options.headers || {}
+        });
+        if (!resp.ok) throw new Error(`代理请求失败 (${resp.status})`);
+        return {
+          ok: resp.ok,
+          status: resp.status,
+          json: () => resp.json(),
+          text: () => resp.text()
+        };
+      } else {
+        // POST型代理：将完整的请求信息发送给代理
+        const proxyOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: url,
+            method: options.method || 'GET',
+            headers: options.headers || {},
+            body: options.body || null
+          })
+        };
+        const resp = await fetch(proxyUrl, proxyOptions);
+        if (!resp.ok) throw new Error(`代理请求失败 (${resp.status})`);
+        return {
+          ok: resp.ok,
+          status: resp.status,
+          json: () => resp.json(),
+          text: () => resp.text()
+        };
+      }
     }
     // 直连模式
     try {

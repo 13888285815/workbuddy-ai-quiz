@@ -8,7 +8,7 @@ const CONFIG = {
     apiKey: 'wk-VgfrBtw547Tn2loHWjW5qqO8rZaLE10S550fJSXoZXjSzEQO',  // agnes-ai.com 免费额度 API Key
     thinking: false,
     defaultQuestionCount: 10,
-    proxyUrl: ''  // CORS 代理地址，留空则不使用代理
+    proxyUrl: 'https://api.allorigins.win/raw?url='  // 默认 CORS 代理地址，解决 GitHub Pages 跨域问题
   },
 
   // 免费/低成本模型预设
