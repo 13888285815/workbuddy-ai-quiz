@@ -8,8 +8,18 @@ const CONFIG = {
     apiKey: 'wk-VgfrBtw547Tn2loHWjW5qqO8rZaLE10S550fJSXoZXjSzEQO',  // agnes-ai.com 免费额度 API Key
     thinking: false,
     defaultQuestionCount: 10,
-    proxyUrl: 'https://cors-anywhere.herokuapp.com/'  // 支持 POST 的 CORS 代理
+    proxyUrl: '',  // 留空优先尝试直连，失败后自动切换代理
+    timeout: 30000  // 请求超时时间（毫秒）
   },
+
+  // 备用 CORS 代理列表（按优先级排序）
+  proxyList: [
+    '',  // 优先直连
+    'https://cors-anywhere.herokuapp.com/',
+    'https://api.codetabs.com/v1/proxy',
+    'https://thingproxy.freeboard.io/fetch',
+    'https://cors.bridged.cc/'
+  ],
 
   // 免费/低成本模型预设
   freeModels: [

@@ -1,41 +1,79 @@
 // api.js - 数据获取与提交
 const API = {
-  // 代理模式：通过代理URL转发请求，解决CORS跨域问题
-  async _fetch(url, options = {}) {
-    const proxyUrl = CONFIG.api.proxyUrl;
-    if (proxyUrl) {
-      // 判断代理类型：URL参数型代理 (如 api.allorigins.win)
-      if (proxyUrl.includes('?url=')) {
-        // 将目标URL作为参数附加到代理URL
-        const finalUrl = proxyUrl + encodeURIComponent(url);
-        const resp = await fetch(finalUrl, {
-          method: options.method || 'GET',
-          headers: options.headers || {}
-        });
-        if (!resp.ok) throw new Error(`代理请求失败 (${resp.status})`);
-        return {
-          ok: resp.ok,
-          status: resp.status,
-          json: () => resp.json(),
-          text: () => resp.text()
-        };
-      } else {
-        // 前缀型代理：将代理URL作为前缀（如 cors-anywhere）
-        const finalUrl = proxyUrl.replace(/\/+$/, '') + '/' + url.replace(/^\/+/, '');
-        const resp = await fetch(finalUrl, options);
-        if (!resp.ok) throw new Error(`代理请求失败 (${resp.status})`);
-        return resp;
-      }
-    }
-    // 直连模式
+  // 带超时的 fetch 封装
+  async _fetchWithTimeout(url, options = {}, timeout = CONFIG.api.timeout) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
     try {
-      return await fetch(url, options);
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      return response;
     } catch (e) {
-      if (e instanceof TypeError && e.message.includes('Failed to fetch') && !CONFIG.api.proxyUrl) {
-        throw new Error('CORS跨域错误：浏览器阻止了直接请求。请在设置中配置 CORS 代理地址，或确认 API 服务器开启了跨域支持。');
+      if (e.name === 'AbortError') {
+        throw new Error('请求超时，请稍后重试');
       }
       throw e;
+    } finally {
+      clearTimeout(timeoutId);
     }
+  },
+
+  // 执行单个请求（带代理）
+  async _executeRequest(url, options = {}, proxyUrl = '') {
+    let finalUrl = url;
+    let useOptions = { ...options };
+    
+    if (proxyUrl) {
+      // 判断代理类型：URL参数型代理
+      if (proxyUrl.includes('?url=')) {
+        finalUrl = proxyUrl + encodeURIComponent(url);
+        // 参数型代理通常只支持 GET
+        useOptions = { method: 'GET', headers: options.headers || {} };
+      } else {
+        // 前缀型代理：将代理URL作为前缀
+        finalUrl = proxyUrl.replace(/\/+$/, '') + '/' + url.replace(/^\/+/, '');
+      }
+    }
+    
+    const resp = await this._fetchWithTimeout(finalUrl, useOptions);
+    
+    if (!resp.ok) {
+      const errText = await resp.text().catch(() => '');
+      throw new Error(`请求失败 (${resp.status}): ${errText || '未知错误'}`);
+    }
+    
+    return resp;
+  },
+
+  // 自动重试：尝试多个代理
+  async _fetch(url, options = {}) {
+    const proxyList = CONFIG.proxyList || [''];
+    let lastError = null;
+    
+    // 如果用户手动设置了代理，优先使用用户设置
+    if (CONFIG.api.proxyUrl) {
+      try {
+        return await this._executeRequest(url, options, CONFIG.api.proxyUrl);
+      } catch (e) {
+        lastError = e;
+      }
+    }
+    
+    // 尝试代理列表
+    for (const proxy of proxyList) {
+      try {
+        const result = await this._executeRequest(url, options, proxy);
+        return result;
+      } catch (e) {
+        lastError = e;
+        console.warn(`代理 ${proxy || '直连'} 失败:`, e.message);
+      }
+    }
+    
+    throw new Error(`所有代理均失败: ${lastError?.message || '未知错误'}`);
   },
 
   // 获取班级学生数据
