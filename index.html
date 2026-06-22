@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AI智能答题系统</title>
+<title>AI智能答题系统 - 小学/初中/高中</title>
 <link rel="stylesheet" href="css/common.css">
 <link rel="stylesheet" href="css/quiz.css">
 </head>
@@ -33,9 +33,18 @@
 
   <div class="card select-card">
     <div class="form-group">
+      <label>选择学段</label>
+      <select id="sel-grade" class="form-select">
+        <option value="">请选择学段</option>
+        <option value="primary">小学</option>
+        <option value="middle">初中</option>
+        <option value="high">高中</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label>选择班级</label>
       <select id="sel-class" class="form-select">
-        <option value="">请选择班级</option>
+        <option value="">请先选择学段</option>
       </select>
     </div>
     <div class="form-group">
@@ -48,6 +57,7 @@
       <label>知识点/题型（输入或选择预设）</label>
       <input type="text" id="knowledge-input" class="form-input" placeholder="例如：初中英语现在完成时、小学数学分数运算...">
     </div>
+    <div id="subject-presets" class="chip-group" style="margin-bottom:12px;display:none;"></div>
     <div id="knowledge-presets" class="chip-group" style="margin-bottom:16px;"></div>
     <div class="form-group">
       <label>题目数量</label>
@@ -163,16 +173,27 @@
     <div class="settings-section">
       <h3>AI 模型设置</h3>
       <div class="form-group">
-        <label>模型名称</label>
-        <input type="text" id="settings-model" class="form-input" placeholder="例如：LongCat-2.0-Preview">
+        <label>选择模型（优先推荐免费额度模型）</label>
+        <select id="settings-model" class="form-select" onchange="Quiz.onModelChange()">
+          <option value="">请选择模型</option>
+        </select>
+        <div id="model-description" style="font-size:12px;color:var(--gray-500);margin-top:6px;"></div>
       </div>
       <div class="form-group">
         <label>API Base URL</label>
-        <input type="text" id="settings-baseurl" class="form-input" placeholder="https://api.longcat.chat/openai">
+        <input type="text" id="settings-baseurl" class="form-input" placeholder="https://api.example.com/v1">
       </div>
       <div class="form-group">
-        <label>API Key（选填，留空使用默认）</label>
-        <input type="password" id="settings-apikey" class="form-input" placeholder="sk-...">
+        <label>API Key（各平台需单独申请）</label>
+        <input type="password" id="settings-apikey" class="form-input" placeholder="sk-... 或各平台API Key">
+        <div style="font-size:12px;color:var(--gray-500);margin-top:4px;">
+          <span style="color:var(--success);">💡 提示：</span>
+          <a href="https://dashscope.aliyuncs.com/" target="_blank" style="color:var(--primary);">阿里云通义千问</a>
+          <span style="margin:0 4px;">|</span>
+          <a href="https://console.bce.baidu.com/qianfan/" target="_blank" style="color:var(--primary);">百度文心一言</a>
+          <span style="margin:0 4px;">|</span>
+          <a href="https://xinghuo.xfyun.cn/" target="_blank" style="color:var(--primary);">讯飞星火</a>
+        </div>
       </div>
       <div class="setting-row">
         <label>关闭模型思考</label>

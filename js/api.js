@@ -94,11 +94,11 @@ const API = {
   },
 
   // AI 生成题目
-  async generateQuestions(knowledge, count) {
+  async generateQuestions(knowledge, count, grade = '小学') {
     if (!CONFIG.api.apiKey) {
       throw new Error('请先在设置中填入 API Key');
     }
-    const systemPrompt = `你是一个出题专家。请生成${count}道关于"${knowledge}"的单选题。
+    const systemPrompt = `你是一个${grade}学科出题专家。请生成${count}道关于"${knowledge}"的单选题。
 
 要求：
 1. 严格按以下JSON数组格式返回，不要任何额外解释：
@@ -106,7 +106,7 @@ const API = {
 2. 正确答案必须是选项数组中的完整文本，不是字母索引
 3. 正确答案随机分布在A/B/C/D四个位置
 4. 干扰项要有迷惑性，与题目相关
-5. 题目要有一定难度和区分度`;
+5. 题目难度要适合${grade}学生水平，要有一定区分度`;
 
     const body = {
       model: CONFIG.api.model,
